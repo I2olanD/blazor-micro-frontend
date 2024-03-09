@@ -1,0 +1,66 @@
+﻿@using Client.Repositories.Menu
+
+@using System.Reflection
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.Extensions.Logging
+
+@inject ILogger<App> Logger
+@inject IMenuRepository MenuRepository
+
+<Router AppAssembly="typeof(App).Assembly" AdditionalAssemblies="lazyLoadedAssemblies"
+    OnNavigateAsync="OnNavigateAsync">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+    </Found>
+
+    <NotFound>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <p>Sorry, there's nothing at this address.</p>
+        </LayoutView>
+    </NotFound>
+</Router>
+
+@code {
+    private List<Assembly> lazyLoadedAssemblies = new();
+    private async Task OnNavigateAsync(NavigationContext args)
+    {
+        try
+        {
+            // Check for Root path
+            if (args.Path == "")
+            {
+                return;
+            }
+
+            // Handle unrecognized paths here
+            var menu = MenuRepository.GetBy(args.Path);
+            if (menu == null || menu.Type == "internal")
+            {
+                return;
+            }
+
+            var assemblyName = $"{menu.Name}App.dll";
+
+            // ToDo: Check if assembly already exists in curreny List
+            if (lazyLoadedAssemblies.Count > 0)
+            {
+                return;
+            }
+
+            // Load Micro Frontend
+            var appUrl = $"http://host.docker.internal:3000/{assemblyName}";
+            var client = new HttpClient();
+            var bytes = await client.GetByteArrayAsync(appUrl);
+            var assembly = Assembly.Load(bytes);
+
+            if (assembly != null)
+            {
+                lazyLoadedAssemblies.AddRange([assembly]);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError("Error: {Message}", ex.Message);
+        }
+    }
+}
