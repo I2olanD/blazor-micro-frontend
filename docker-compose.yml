@@ -6,11 +6,11 @@ services:
     build: ./Client
     restart: unless-stopped
     ports:
-      - ${CLIENT_PORT}:8080
+      - ${CLIENT_HOST_PORT}:{CONTAINER_PORT}
 
   counter_app:
     container_name: counter_app
     build: ./CounterApp
     restart: unless-stopped
     ports:
-      - ${COUNTER_APP_PORT}:8080
+      - ${COUNTER_APP_HOST_PORT}:{CONTAINER_PORT}
