@@ -9,6 +9,6 @@ namespace Client.Repositories.Menu
     };
 
     public IEnumerable<Menu> GetAll() => _menus;
-    public Menu GetBy(string Scope) => _menus.SingleOrDefault(menu => menu.Scope.Equals(Scope));
+    public Menu? GetBy(string Scope) => _menus.SingleOrDefault(menu => menu.Scope.Equals(Scope));
   }
 }
