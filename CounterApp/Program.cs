@@ -1,4 +1,4 @@
-using CounterApp.Components;
+using CounterApp;
 
 var builder = WebApplication.CreateBuilder(args);
 

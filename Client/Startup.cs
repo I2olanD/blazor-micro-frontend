@@ -17,7 +17,7 @@ namespace Client
     public void ConfigureServices(IServiceCollection services)
     {
       // Settings these options allows MapFallbackToPage to resolve
-      services.Configure<RazorPagesOptions>(options => options.RootDirectory = "/src/Components/Pages");
+      services.Configure<RazorPagesOptions>(options => options.RootDirectory = "/");
 
       services.AddRazorPages();
       services.AddServerSideBlazor();
