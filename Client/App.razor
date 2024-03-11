@@ -55,6 +55,9 @@
 
             if (assembly != null)
             {
+                var aName = assembly.GetName();
+                Logger.LogInformation("Name: {0}", aName.Name);
+                Logger.LogInformation("Version: {0}.{1}", aName?.Version?.Major, aName?.Version?.Minor);
                 lazyLoadedAssemblies.AddRange([assembly]);
             }
         }
