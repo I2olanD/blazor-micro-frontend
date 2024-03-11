@@ -33,22 +33,22 @@
             }
 
             // Handle unrecognized paths here
-            var menu = MenuRepository.GetBy(args.Path);
-            if (menu == null || menu.Type == "internal")
+            var menuItem = MenuRepository.GetBy(args.Path);
+            if (menuItem == null || menuItem.Type == "internal")
             {
                 return;
             }
 
-            var assemblyName = $"{menu.Name}App.dll";
-
-            // ToDo: Check if assembly already exists in curreny List
-            if (lazyLoadedAssemblies.Count > 0)
+            // Check if assembly is already loaded
+            var assemblyName = $"{menuItem.Name}App";
+            var loadedAssembly = lazyLoadedAssemblies.Find(a => a.GetName().Name == assemblyName);
+            if (loadedAssembly != null)
             {
                 return;
             }
 
-            // Load Micro Frontend
-            var appUrl = $"http://host.docker.internal:3000/{assemblyName}";
+            // Load assembly
+            var appUrl = $"http://host.docker.internal:3000/{assemblyName}.dll";
             var client = new HttpClient();
             var bytes = await client.GetByteArrayAsync(appUrl);
             var assembly = Assembly.Load(bytes);
