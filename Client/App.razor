@@ -1,4 +1,5 @@
 ﻿@using Client.Repositories.Menu
+@using Client.Extensions
 
 @using System.Reflection
 @using Microsoft.AspNetCore.Components.Routing
@@ -6,6 +7,7 @@
 
 @inject ILogger<App> Logger
 @inject IMenuRepository MenuRepository
+@inject AssemblyLoader AssemblyLoader
 
 <Router AppAssembly="typeof(App).Assembly" AdditionalAssemblies="lazyLoadedAssemblies"
     OnNavigateAsync="OnNavigateAsync">
@@ -48,10 +50,7 @@
             }
 
             // Load assembly
-            var appUrl = $"http://host.docker.internal:3000/{assemblyName}.dll";
-            var client = new HttpClient();
-            var bytes = await client.GetByteArrayAsync(appUrl);
-            var assembly = Assembly.Load(bytes);
+            var assembly = await AssemblyLoader.Load(assemblyName);
 
             if (assembly != null)
             {

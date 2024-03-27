@@ -21,8 +21,8 @@ namespace Client
 
       services.AddRazorPages();
       services.AddServerSideBlazor();
-      services.AddNavigationMenu();
-      // services.AddSingleton<RouteManager>();
+      services.AddMenuRepository();
+      services.AddAssemblyLoader();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
