@@ -9,10 +9,11 @@ var app = builder.Build();
 
 app.UseStaticFiles(new StaticFileOptions
 {
-  ServeUnknownFileTypes = true,
+    ServeUnknownFileTypes = true,
 });
 
 app.UseHttpsRedirection();
+// test
 
 app.UseStaticFiles();
 app.UseAntiforgery();
