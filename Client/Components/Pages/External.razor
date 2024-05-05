@@ -7,23 +7,22 @@
 <PageTitle>Weather App</PageTitle>
 
 <h1>
-  @if (DynamicType is not null)
+  @if (_dynamicType is not null)
   {
-    <DynamicComponent Type="DynamicType" @ref="DynamicComponent" Parameters="Parameters" />
+    <DynamicComponent Type="_dynamicType" @ref="_dynamicComponent" Parameters="_parameters" />
   }
 
 </h1>
 
 @code {
-  [Parameter]
-  public string ExternalAppPath { get; set; }
-  private Type DynamicType;
-  private DynamicComponent DynamicComponent;
-  Dictionary<string, object> Parameters;
+  [Parameter] public string ExternalAppPath { get; set; } = "";
+  private Type? _dynamicType;
+  private DynamicComponent? _dynamicComponent;
+  Dictionary<string, object>? _parameters;
 
   protected override async Task OnInitializedAsync()
   {
-    Parameters = new() { { "Token", "TokenFromShell" } };
+    _parameters = new() { { "Token", "TokenFromShell" } };
 
     var menuItem = MenuRepository.GetBy(ExternalAppPath);
     if (menuItem == null || menuItem.Type == "internal")
@@ -34,9 +33,6 @@
     var assemblyName = $"{menuItem.Name}App";
     var assembly = await AssemblyLoader.Load(assemblyName);
 
-    if (assembly is not null)
-    {
-      DynamicType = assembly.GetType("CounterApp.Components.Pages.Counter");
-    }
+    _dynamicType = assembly.GetType("CounterApp.Components.Pages.Counter");
   }
 }
