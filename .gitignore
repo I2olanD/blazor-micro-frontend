@@ -333,3 +333,6 @@ ASALocalRun/
 
 # Build
 build/
+
+# DLL
+*.dll

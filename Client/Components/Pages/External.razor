@@ -1,0 +1,42 @@
+@page "/{ExternalAppPath}"
+@using Client.Extensions
+@using Client.Repositories.Menu
+
+@inject IMenuRepository MenuRepository
+
+<PageTitle>Weather App</PageTitle>
+
+<h1>
+  @if (DynamicType is not null)
+  {
+    <DynamicComponent Type="DynamicType" @ref="DynamicComponent" Parameters="Parameters" />
+  }
+
+</h1>
+
+@code {
+  [Parameter]
+  public string ExternalAppPath { get; set; }
+  private Type DynamicType;
+  private DynamicComponent DynamicComponent;
+  Dictionary<string, object> Parameters;
+
+  protected override async Task OnInitializedAsync()
+  {
+    Parameters = new() { { "Token", "TokenFromShell" } };
+
+    var menuItem = MenuRepository.GetBy(ExternalAppPath);
+    if (menuItem == null || menuItem.Type == "internal")
+    {
+      return;
+    }
+
+    var assemblyName = $"{menuItem.Name}App";
+    var assembly = await AssemblyLoader.Load(assemblyName);
+
+    if (assembly is not null)
+    {
+      DynamicType = assembly.GetType("CounterApp.Components.Pages.Counter");
+    }
+  }
+}

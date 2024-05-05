@@ -9,8 +9,7 @@
 @inject IMenuRepository MenuRepository
 @inject AssemblyLoader AssemblyLoader
 
-<Router AppAssembly="typeof(App).Assembly" AdditionalAssemblies="lazyLoadedAssemblies"
-    OnNavigateAsync="OnNavigateAsync">
+<Router AppAssembly="typeof(App).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
     </Found>
@@ -21,48 +20,3 @@
         </LayoutView>
     </NotFound>
 </Router>
-
-@code {
-    private List<Assembly> lazyLoadedAssemblies = new();
-    private async Task OnNavigateAsync(NavigationContext args)
-    {
-        try
-        {
-            // Check for Root path
-            if (args.Path == "")
-            {
-                return;
-            }
-
-            // Handle unrecognized paths here
-            var menuItem = MenuRepository.GetBy(args.Path);
-            if (menuItem == null || menuItem.Type == "internal")
-            {
-                return;
-            }
-
-            // Check if assembly is already loaded
-            var assemblyName = $"{menuItem.Name}App";
-            var loadedAssembly = lazyLoadedAssemblies.Find(a => a.GetName().Name == assemblyName);
-            if (loadedAssembly != null)
-            {
-                return;
-            }
-
-            // Load assembly
-            var assembly = await AssemblyLoader.Load(assemblyName);
-
-            if (assembly != null)
-            {
-                var aName = assembly.GetName();
-                Logger.LogInformation("Name: {0}", aName.Name);
-                Logger.LogInformation("Version: {0}.{1}", aName?.Version?.Major, aName?.Version?.Minor);
-                lazyLoadedAssemblies.AddRange([assembly]);
-            }
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError("Error: {Message}", ex.Message);
-        }
-    }
-}
